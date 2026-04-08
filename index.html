@@ -1272,7 +1272,7 @@ async function handleSubmit(e, successId) {
     _recaptcha: recaptchaToken
   };
 
-  // Send to Formspree
+  // --- 1) Send to Formspree (normal fetch, reads response) ---
   let emailOK = false;
   try {
     const fd = new FormData();
@@ -1293,20 +1293,21 @@ async function handleSubmit(e, successId) {
     console.error('Formspree error:', err);
   }
 
-  // Send to Google Sheets
-  let sheetsOK = false;
+  // --- 2) Send to Google Sheets (no-CORS mode, fire-and-forget) ---
+  let sheetsOK = true;
   try {
-    const res = await fetch(SHEETS_URL, {
+    await fetch(SHEETS_URL, {
       method: 'POST',
+      mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(formData)
     });
-    const result = await res.json();
-    sheetsOK = (result.status === 'ok');
   } catch (err) {
     console.error('Sheets error:', err);
+    sheetsOK = false;
   }
 
+  // Show result
   if (emailOK || sheetsOK) {
     setRateLimit();
     btn.innerHTML = '<span>✅ Sent!</span>';
