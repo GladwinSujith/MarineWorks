@@ -1192,9 +1192,6 @@ function sanitize(str) {
   return str
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#x27;')
-    .replace(/\//g, '&#x2F;')
     .trim()
     .substring(0, 1000); // max 1000 chars per field
 }
